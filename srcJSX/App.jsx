@@ -19,9 +19,39 @@ function App() {
   }
 
   const resetHandler = () => {
+    let newModel = reset(model);
+    setModel(newModel);
+  }
+
+  handleChange = (e) => {
+    if (e.target.value == 1){
+          model = new Model(level1);
+        } else if (e.target.value == 2) {
+          model = new Model(level2);
+        } else if (e.target.value == 3) {
+          model = new Model(level3)
+        }
+    
+        model.level = e.target.value;
         let newModel = reset(model);
         setModel(newModel);
   }
+
+  // const changeLevel = (index) =>{ //Changing levels is only tested for leaderboard, TODO: ensure model.level change is correct and setmodel call is correct when more levels are added
+  //   if (index == 0){
+  //     model = new Model(level1);
+  //   } else if (index == 1) {
+  //     model = new Model(level2);
+  //   } else if (index == 2) {
+  //     model = new Model(level3)
+  //   }
+
+  //   console.log(index);
+
+  //   model.level = index + 1;
+  //   let newModel = reset(model);
+  //   setModel(newModel);
+  // }
 
   //REMEMBER: if you modify this file at all, run 'npm run build' to compile the jsx to js-- 
   //this will overwrite the versions in lib
@@ -67,10 +97,10 @@ function App() {
           </div>
           <div className="is-flex is-flex-direction-column is-justify-content-space-evenly is-align-content-space-evenly">
             <div className="select mb-1 mx-1">
-              <select onChange={(e) => resetHandler()}>
-                <option>Level 1</option>
-                <option>Level 2</option>
-                <option>Level 3</option>
+              <select onChange={this.handleChange}>
+                <option value="1">Level 1</option>
+                <option value="2">Level 2</option>
+                <option value="3">Level 3</option>
               </select>
             </div>
             <button className="button is-success">
@@ -81,7 +111,7 @@ function App() {
             <label className="box has-background-black-ter has-text-white-ter">
               {"Moves: " + model.numMoves}
             </label>
-            <button className="button is-danger is-large" onClick={(e) => resetHandler()} >Reset</button>
+            <button className="button is-danger is-large" onClick={(e) => resetHandler()}>Reset</button>
           </div>
         </div>
       </div>
