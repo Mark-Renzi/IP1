@@ -102,19 +102,19 @@ class Puzzle {
         let newRow = player.row + dir.deltar;
         let newCol = player.column + dir.deltac;
         let adjSquare = this.getSquare(newRow, newCol);
-        if (this.canRemove(dir)) {
-            let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-            adjSquare.color = "white";
-            farSquare.color = "white";
-            this.setPlayer(newRow, newCol);
-        }
-        else if (this.canPush(dir)) {
-            let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-            farSquare.color = adjSquare.color;
-            adjSquare.color = "white";
-            this.setPlayer(newRow, newCol);
-        }
-        else if (this.canMoveToEmpty(dir)) {
+        // if (this.canRemove(dir)) {
+        //     let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
+        //     adjSquare.color = "white";
+        //     farSquare.color = "white";
+        //     this.setPlayer(newRow, newCol);
+        // }
+        // else if (this.canPush(dir)) {
+        //     let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
+        //     farSquare.color = adjSquare.color;
+        //     adjSquare.color = "white";
+        //     this.setPlayer(newRow, newCol);
+        // }
+        if (this.canMoveToEmpty(dir)) {
             this.setPlayer(newRow, newCol);
         }
     }
@@ -124,7 +124,7 @@ class Puzzle {
     }
 
     canMove(dir) {
-        return this.canMoveToEmpty(dir) || this.canPush(dir) || this.canRemove(dir);
+        return this.canMoveToEmpty(dir);// || this.canPush(dir) || this.canRemove(dir);
     }
 
     canMoveToEmpty(dir) {
@@ -140,21 +140,21 @@ class Puzzle {
 
     }
 
-    canPush(dir) {
-        let player = this.player;
-        let newRow = player.row + dir.deltar;
-        let newCol = player.column + dir.deltac;
+    // canPush(dir) {
+    //     let player = this.player;
+    //     let newRow = player.row + dir.deltar;
+    //     let newCol = player.column + dir.deltac;
 
-        if ((newRow >= 0 && newRow < this.rowNum) && (newCol >= 0 && newCol < this.colNum)) {
-            let adjSquare = this.getSquare(newRow, newCol);
-            if ((newRow + dir.deltar>= 0 && newRow+ dir.deltar < this.rowNum) && (newCol+ dir.deltac >= 0 && newCol+ dir.deltac < this.colNum)) {
-                let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-                if (!(adjSquare.color === "white") && farSquare.color === "white") return true;
-            }
-            else return false;
-        } 
-        else return false;
-    }
+    //     if ((newRow >= 0 && newRow < this.rowNum) && (newCol >= 0 && newCol < this.colNum)) {
+    //         let adjSquare = this.getSquare(newRow, newCol);
+    //         if ((newRow + dir.deltar>= 0 && newRow+ dir.deltar < this.rowNum) && (newCol+ dir.deltac >= 0 && newCol+ dir.deltac < this.colNum)) {
+    //             let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
+    //             if (!(adjSquare.color === "white") && farSquare.color === "white") return true;
+    //         }
+    //         else return false;
+    //     } 
+    //     else return false;
+    // }
 
     canRemove(dir) {
         let player = this.player;
@@ -190,18 +190,18 @@ class Model {
     }
     
     initialize(info) {
-        let numRows = parseInt(info.numRows);
-        let numCols = parseInt(info.numCols);
+        let numRows = parseInt(info.rows);
+        let numCols = parseInt(info.columns);
 
-        let arow = parseInt(info.actor.row);
-        let acol = parseInt(info.actor.column);
+        let arow = parseInt(info.ninjase.row);
+        let acol = parseInt(info.ninjase.column);
         
         this.puzzle = new Puzzle(numRows, numCols);
         
-        for (let s of info.squares) {
+        for (let s of info.walls) {
             let r = parseInt(s.row);
             let c = parseInt(s.column);
-            this.puzzle.squares[r*numCols+c].color = s.color;
+            this.puzzle.squares[r*numCols+c].color = "black";
         }
         this.puzzle.setPlayer(arow, acol);
         this.victory = false;

@@ -56,7 +56,7 @@ function redrawCanvas(model, canvasObj, appObj) {
 function drawPuzzle(ctx, puzzle) {
     
     const img = new Image();
-    img.src = "./assets/2.jpg"
+    img.src = "./assets/NinjaSe.png"
     ctx.shadowColor = "black";
 
     puzzle.squares.forEach(square => {

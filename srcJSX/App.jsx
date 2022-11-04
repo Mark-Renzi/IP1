@@ -65,11 +65,22 @@ function App() {
                     >&gt;
             </button>
           </div>
-          <label className="box has-background-black-ter has-text-white-ter mt-5 mr-2">
-                  {"Moves: " + model.numMoves}
-          </label>
-          <div className="is-flex is-flex-direction-column">
-            <button id="formButton" onClick={(e) => add()} className="button is-success is-large">Submit</button>
+          <div className="is-flex is-flex-direction-column is-justify-content-space-evenly is-align-content-space-evenly">
+            <div className="select mb-1 mx-1">
+              <select onChange={(e) => resetHandler()}>
+                <option>Level 1</option>
+                <option>Level 2</option>
+                <option>Level 3</option>
+              </select>
+            </div>
+            <button className="button is-success">
+              Pickup Key
+            </button>
+          </div>
+          <div className="is-flex is-flex-direction-column is-justify-content-center is-align-content-center">
+            <label className="box has-background-black-ter has-text-white-ter">
+              {"Moves: " + model.numMoves}
+            </label>
             <button className="button is-danger is-large" onClick={(e) => resetHandler()} >Reset</button>
           </div>
         </div>
