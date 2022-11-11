@@ -26,15 +26,12 @@ class Rectangle {
  * @returns 
  */
 function redrawCanvas(model, canvasObj, appObj) {
-    //for testing purposes
     if (typeof canvasObj === "undefined") {return;}
 
     const ctx = canvasObj.getContext('2d');
-
-    //for testing purposes
     if (ctx === null) {return;}
 
-    //clear the canvas area
+    //blank the canvas
     ctx.clearRect(0,0,canvasObj.width, canvasObj.height)
 
     if (model.puzzle && !model.victory) {

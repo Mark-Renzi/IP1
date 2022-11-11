@@ -1,8 +1,8 @@
 {
-  "name": "PushBox",
-  "version": "1.0.0",
-  "description": "A puzzle game with an online leaderboard",
-  "main": "views/index.html",
+  "name": "NinjaSe Game",
+  "version": "1.0.1",
+  "description": "An escape puzzle game",
+  "main": "views/main.html",
   "scripts": {
     "start": "node server.js",
     "build": "babel srcJSX -d lib"
