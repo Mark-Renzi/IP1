@@ -1,5 +1,5 @@
 {
-  "name": "NinjaSe Game",
+  "name": "NinjaSe-Game",
   "version": "1.0.1",
   "description": "An escape puzzle game",
   "main": "views/main.html",
@@ -11,7 +11,7 @@
     "body-parser": "^1.20.1",
     "bulma": "0.9.4",
     "compression": "^1.7.4",
-    "dotenv": "^16.0.2",
+    "dotenv": "^16.0.3",
     "path": "^0.12.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

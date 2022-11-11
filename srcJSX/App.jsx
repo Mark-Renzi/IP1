@@ -35,6 +35,8 @@ function App() {
           model = new Model(level2);
         } else if (e.target.value == 3) {
           model = new Model(level3)
+        } else if (e.target.value == 4) {
+          model = new Model(level4)
         }
     
         model.level = e.target.value;
@@ -87,6 +89,7 @@ function App() {
                 <option value="1">Level 1</option>
                 <option value="2">Level 2</option>
                 <option value="3">Level 3</option>
+                <option value="4">Level 4</option>
               </select>
             </div>
             <button className="button is-success" onClick={(e) => pickupHandler()} disabled={!model.puzzle.canPickup()}>
