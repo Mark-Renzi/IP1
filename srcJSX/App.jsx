@@ -18,6 +18,11 @@ function App() {
     setModel(newModel);
   }
 
+  const pickupHandler = () => {
+    let newModel = pickup(model);
+    setModel(newModel);
+  }
+
   const resetHandler = () => {
     let newModel = reset(model);
     setModel(newModel);
@@ -36,25 +41,6 @@ function App() {
         let newModel = reset(model);
         setModel(newModel);
   }
-
-  // const changeLevel = (index) =>{ //Changing levels is only tested for leaderboard, TODO: ensure model.level change is correct and setmodel call is correct when more levels are added
-  //   if (index == 0){
-  //     model = new Model(level1);
-  //   } else if (index == 1) {
-  //     model = new Model(level2);
-  //   } else if (index == 2) {
-  //     model = new Model(level3)
-  //   }
-
-  //   console.log(index);
-
-  //   model.level = index + 1;
-  //   let newModel = reset(model);
-  //   setModel(newModel);
-  // }
-
-  //REMEMBER: if you modify this file at all, run 'npm run build' to compile the jsx to js-- 
-  //this will overwrite the versions in lib
   
   return(
     <main ref={appRef}>
@@ -103,7 +89,7 @@ function App() {
                 <option value="3">Level 3</option>
               </select>
             </div>
-            <button className="button is-success">
+            <button className="button is-success" onClick={(e) => pickupHandler()} disabled={!model.puzzle.canPickup()}>
               Pickup Key
             </button>
           </div>

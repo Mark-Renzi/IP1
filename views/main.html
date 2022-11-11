@@ -102,17 +102,17 @@
   </body>
   <script>
   
-    function startTimer() {
-      beginTime = new Date().getTime();
-      let timerTracker = setInterval(function () {
-        timePassed = (new Date().getTime() - beginTime) / 1000;
+    // function startTimer() {
+    //   beginTime = new Date().getTime();
+    //   let timerTracker = setInterval(function () {
+    //     timePassed = (new Date().getTime() - beginTime) / 1000;
 
-        //after game finished
-        if (model.victory) {
-          clearInterval(timerTracker);
-        }
-      }, 1);
-    }
+    //     //after game finished
+    //     if (model.victory) {
+    //       clearInterval(timerTracker);
+    //     }
+    //   }, 1);
+    // }
     
     document.addEventListener('DOMContentLoaded', () => {
       
@@ -192,6 +192,10 @@
                 break;
               case 40:
                 newModel = move(model, Down);
+                e.preventDefault();
+                break;
+              case 32:
+                newModel = pickup(model);
                 e.preventDefault();
                 break;
               default:

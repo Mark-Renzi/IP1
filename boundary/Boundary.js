@@ -1,4 +1,4 @@
-const LEVELOFFSETH = 5;
+const LEVELOFFSET = 5;
 const BOXSIZE = 50;
 const OFFSET = 3;
 var isDraw = false;
@@ -36,7 +36,7 @@ function redrawCanvas(model, canvasObj, appObj) {
 
     //clear the canvas area
     ctx.clearRect(0,0,canvasObj.width, canvasObj.height)
-  
+
     if (model.puzzle && !model.victory) {
       isDraw = false;
       drawPuzzle(ctx, model.puzzle);
@@ -59,24 +59,43 @@ function drawPuzzle(ctx, puzzle) {
     img.src = "./assets/NinjaSe.png"
     ctx.shadowColor = "black";
 
-    puzzle.squares.forEach(square => {
-        let rect = computeRectangle(square);
-        ctx.fillStyle = square.color;
+    puzzle.walls.forEach(wall => {
+        let rect = getRect(wall);
+        ctx.fillStyle = wall.color;
         ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
     })
 
-    let rect = computeRectangle(puzzle.player);
+    puzzle.doors.forEach(door => {
+        let rect = getRect(door);
+        ctx.fillStyle = "black";
+        ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        ctx.fillStyle = door.color;
+        ctx.fillRect(rect.x+5, rect.y+5, rect.width-10, rect.height-10);
+        ctx.fillStyle = "black";
+        ctx.fillRect(rect.x+13, rect.y+13, rect.width-26, rect.height-26);
+        ctx.fillStyle = "white";
+        ctx.fillRect(rect.x+14, rect.y+14, rect.width-28, rect.height-28);
+    })
+
+    puzzle.keys.forEach(key => {
+        let rect = getRect(key);
+        ctx.fillStyle = "black";
+        ctx.fillRect(rect.x+13, rect.y+13, rect.width-26, rect.height-26);
+        ctx.fillStyle = key.color;
+        ctx.fillRect(rect.x+14, rect.y+14, rect.width-28, rect.height-28);
+    })
+
+    let rect = getRect(puzzle.player);
     img.onload = function() {
         if (!isDraw) {
-        
             ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
             isDraw = true
         }
     }
 }
 
-function computeRectangle(square) {
-    let c = square.location();
-    let rect = new Rectangle(BOXSIZE*c.column + OFFSET + LEVELOFFSETH, BOXSIZE*c.row + OFFSET + LEVELOFFSETH, BOXSIZE-2*OFFSET, BOXSIZE-2*OFFSET);
+function getRect(wall) {
+    let c = wall.location();
+    let rect = new Rectangle(BOXSIZE*c.column + OFFSET + LEVELOFFSET, BOXSIZE*c.row + OFFSET + LEVELOFFSET, BOXSIZE-2*OFFSET, BOXSIZE-2*OFFSET);
     return rect;
 }

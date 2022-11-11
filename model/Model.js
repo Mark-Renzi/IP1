@@ -16,9 +16,9 @@ const Down = new MoveType(1, 0, "down");
 const Up = new MoveType(-1, 0, "up");
 const Left = new MoveType(0, -1, "left");
 const Right = new MoveType(0, 1, "right");
-const NoMove = new MoveType(0, 0, "*");  // no move is possible
+const NoMove = new MoveType(0, 0, "*");
 
-class Square {
+class Wall {
 
     constructor(row, column, color) {
         this.row = row;
@@ -31,7 +31,53 @@ class Square {
     }
 
     copy() {
-        let s = new Square(this.row, this.column, this.color)
+        let s = new Wall(this.row, this.column, this.color)
+        return s;
+    }
+
+    remove() {
+        this.color = "white";
+    }
+
+}
+
+class Door {
+
+    constructor(row, column, color) {
+        this.row = row;
+        this.column = column;
+        this.color = color;
+    }
+
+    location() {
+        return new Coordinate(this.row, this.column);
+    }
+
+    copy() {
+        let s = new Door(this.row, this.column, this.color)
+        return s;
+    }
+
+    remove() {
+        this.color = "white";
+    }
+
+}
+
+class Key {
+
+    constructor(row, column, color) {
+        this.row = row;
+        this.column = column;
+        this.color = color;
+    }
+
+    location() {
+        return new Coordinate(this.row, this.column);
+    }
+
+    copy() {
+        let s = new Key(this.row, this.column, this.color)
         return s;
     }
 
@@ -45,13 +91,17 @@ class Player {
     constructor (row, col) {
         this.row = row;
         this.column = col;
+        this.held = null;
     }
-
+    setHeld(key) {
+        this.held = key;
+    }
     location() {
         return new Coordinate(this.row, this.column);
     }
     copy() {
         let s = new Player(this.row, this.column)
+        s.setHeld(this.held);
         return s;
     }
     move(dir) {
@@ -64,18 +114,20 @@ class Puzzle {
     constructor(rowNum, colNum) {
         this.rowNum = rowNum;
         this.colNum = colNum;
-        this.squares = this.init();
+        this.walls = this.initWalls();
+        this.doors = [];
+        this.keys = [];
         this.player = new Player(0, 0);
     }
 
-    init() {
-        var allSquares = [];
+    initWalls() {
+        var allWalls = [];
         for (let row = 0; row < this.rowNum; row++) {
             for (let col = 0; col < this.colNum; col++) {
-                allSquares.push(new Square(row, col, "white"));
+                allWalls.push(new Wall(row, col, "white"));
             }
         }
-        return allSquares;
+        return allWalls;
     }
 
     setPlayer(row, col) {
@@ -85,13 +137,23 @@ class Puzzle {
 
     clone() {
         let copy = new Puzzle(this.rowNum, this.colNum);
-        copy.squares = [];
-        for (let s of this.squares) {
+        copy.walls = [];
+        for (let s of this.walls) {
             let dup = s.copy();
-            copy.squares.push(dup);
+            copy.walls.push(dup);
             if (s === this.selected) {
                 copy.selected = dup;
             }
+        }
+        copy.doors = [];
+        for (let s of this.doors) {
+            let dup = s.copy();
+            copy.doors.push(dup);
+        }
+        copy.keys = [];
+        for (let s of this.keys) {
+            let dup = s.copy();
+            copy.keys.push(dup);
         }
         copy.player = this.player.copy();
         return copy;
@@ -101,30 +163,86 @@ class Puzzle {
         let player = this.player;
         let newRow = player.row + dir.deltar;
         let newCol = player.column + dir.deltac;
-        let adjSquare = this.getSquare(newRow, newCol);
-        // if (this.canRemove(dir)) {
-        //     let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-        //     adjSquare.color = "white";
-        //     farSquare.color = "white";
-        //     this.setPlayer(newRow, newCol);
-        // }
-        // else if (this.canPush(dir)) {
-        //     let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-        //     farSquare.color = adjSquare.color;
-        //     adjSquare.color = "white";
-        //     this.setPlayer(newRow, newCol);
-        // }
         if (this.canMoveToEmpty(dir)) {
+            this.setPlayer(newRow, newCol);
+        } else if (this.canOpenDoor(dir)) {
+            let i = 0;
+            for (let s of this.doors) {
+                let r = parseInt(s.row);
+                let c = parseInt(s.column);
+                if (r == newRow && c == newCol){
+                    break;
+                }
+                i++;
+            }
+            this.doors.splice(i, 1);
+            this.player.setHeld(null);
             this.setPlayer(newRow, newCol);
         }
     }
 
-    getSquare(row, col) {
-        return this.squares[row*this.colNum+col];
+    pickup() {
+        let oldFloor;
+        let i = 0;
+        for (let s of this.keys) {
+
+            let r = parseInt(s.row);
+            let c = parseInt(s.column);
+            if (r == this.player.row && c == this.player.column){
+                oldFloor = s;
+                break;
+            }
+            i++;
+        }
+        let oldHeld = this.player.held;
+        this.player.setHeld(oldFloor);
+
+        //remove key from list
+        this.keys.splice(i, 1);
+        //set floor to have new key
+        if (oldHeld != null){
+            oldHeld.row = this.player.row;
+            oldHeld.column = this.player.column;
+            this.keys.push(oldHeld);
+        }
+        
+    }
+
+    getWall(row, col) {
+        return this.walls[row*this.colNum+col];
+    }
+
+    getDoor(row, col) {
+        for (let s of this.doors) {
+            let r = parseInt(s.row);
+            let c = parseInt(s.column);
+            if (r == row && c == col){
+                return s;
+            }
+        }
+        return false;
+    }
+
+    getKey(row, col) {
+        for (let s of this.keys) {
+            let r = parseInt(s.row);
+            let c = parseInt(s.column);
+            if (r == row && c == col){
+                return s;
+            }
+        }
+        return false;
     }
 
     canMove(dir) {
-        return this.canMoveToEmpty(dir);// || this.canPush(dir) || this.canRemove(dir);
+        return !model.victory && (this.canMoveToEmpty(dir) || this.canOpenDoor(dir));// || this.canPush(dir) || this.canRemove(dir);
+    }
+
+    canPickup(){
+        if ( this.getKey(this.player.row, this.player.column)){
+            return true;
+        }
+        return false;
     }
 
     canMoveToEmpty(dir) {
@@ -133,42 +251,24 @@ class Puzzle {
         let newCol = player.column + dir.deltac;
 
         if ((newRow >= 0 && newRow < this.rowNum) && (newCol >= 0 && newCol < this.colNum)) {
-            let adjSquare = this.getSquare(newRow, newCol);
-            if (adjSquare.color === "white") return true;
+            let adjWall = this.getWall(newRow, newCol);
+            if (adjWall.color === "white" && this.getDoor(newRow, newCol) == false) return true;
         } 
         else return false;
 
     }
 
-    // canPush(dir) {
-    //     let player = this.player;
-    //     let newRow = player.row + dir.deltar;
-    //     let newCol = player.column + dir.deltac;
-
-    //     if ((newRow >= 0 && newRow < this.rowNum) && (newCol >= 0 && newCol < this.colNum)) {
-    //         let adjSquare = this.getSquare(newRow, newCol);
-    //         if ((newRow + dir.deltar>= 0 && newRow+ dir.deltar < this.rowNum) && (newCol+ dir.deltac >= 0 && newCol+ dir.deltac < this.colNum)) {
-    //             let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-    //             if (!(adjSquare.color === "white") && farSquare.color === "white") return true;
-    //         }
-    //         else return false;
-    //     } 
-    //     else return false;
-    // }
-
-    canRemove(dir) {
+    canOpenDoor(dir) { //returns true if door exists AND if ninjaSe has correct Key
         let player = this.player;
+        if (player.held == null) return false;
         let newRow = player.row + dir.deltar;
         let newCol = player.column + dir.deltac;
 
         if ((newRow >= 0 && newRow < this.rowNum) && (newCol >= 0 && newCol < this.colNum)) {
-            let adjSquare = this.getSquare(newRow, newCol);
-            if ((newRow + dir.deltar>= 0 && newRow+ dir.deltar < this.rowNum) && (newCol+ dir.deltac >= 0 && newCol+ dir.deltac < this.colNum)) {
-                let farSquare = this.getSquare(newRow + dir.deltar, newCol + dir.deltac);
-                if (adjSquare.color === farSquare.color) return true;
-            }
-            else return false;
+            let adjDoor = this.getDoor(newRow, newCol);
+            if (adjDoor != null && adjDoor.color == player.held.color) return true;
         } 
+
         else return false;
     }
 }
@@ -198,11 +298,24 @@ class Model {
         
         this.puzzle = new Puzzle(numRows, numCols);
         
-        for (let s of info.walls) {
+        for (let w of info.walls) {
+            let r = parseInt(w.row);
+            let c = parseInt(w.column);
+            this.puzzle.walls[r*numCols+c].color = "black";
+        }
+
+        for (let s of info.doors) {
             let r = parseInt(s.row);
             let c = parseInt(s.column);
-            this.puzzle.squares[r*numCols+c].color = "black";
+            this.puzzle.doors.push(new Door(r, c, s.color));
         }
+
+        for (let s of info.keys) {
+            let r = parseInt(s.row);
+            let c = parseInt(s.column);
+            this.puzzle.keys.push(new Key(r, c, s.color));
+        }
+
         this.puzzle.setPlayer(arow, acol);
         this.victory = false;
         this.level = parseInt(info.level);
@@ -210,11 +323,7 @@ class Model {
     }
 
     isWin() {
-        for (let s of this.puzzle.squares) {
-            if (!(s.color === "white"))
-                return false;
-        }
-        this.victory = true;
-        return true;
+        model.victory = this.puzzle.doors.length == 0
+        return model.victory;
     }
 }
