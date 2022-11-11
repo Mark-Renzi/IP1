@@ -32,6 +32,7 @@ function redrawCanvas(model, canvasObj, appObj) {
     if (ctx === null) {return;}
 
     //blank the canvas
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0,0,canvasObj.width, canvasObj.height)
 
     if (model.puzzle && !model.victory) {
@@ -51,7 +52,9 @@ function redrawCanvas(model, canvasObj, appObj) {
 
 
 function drawPuzzle(ctx, puzzle) {
-    
+    let scalefactor = 9.8/Math.max(puzzle.rowNum, puzzle.colNum);
+    ctx.scale(scalefactor, scalefactor);
+    console.log(puzzle.rows);
     const img = new Image();
     img.src = "./assets/NinjaSe.png"
     ctx.shadowColor = "black";
@@ -86,6 +89,13 @@ function drawPuzzle(ctx, puzzle) {
     img.onload = function() {
         if (!isDraw) {
             ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
+            if (puzzle.player.held != null){
+                ctx.fillStyle = "black";
+                ctx.fillRect(rect.x+20, rect.y+20, rect.width-26, rect.height-26);
+                ctx.fillStyle = puzzle.player.held.color;
+                ctx.fillRect(rect.x+21, rect.y+21, rect.width-28, rect.height-28);
+            }
+            
             isDraw = true
         }
     }
