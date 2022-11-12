@@ -40,9 +40,17 @@ function redrawCanvas(model, canvasObj, appObj) {
       drawPuzzle(ctx, model.puzzle);
     }
     else {
-      ctx.fillStyle = "white";
-      ctx.fillRect(0, 0, canvasObj.width, canvasObj.height);  
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "rgba(255, 255, 255, .5)";
+      ctx.beginPath();
+      ctx.roundRect(20, 20, canvasObj.width -40, canvasObj.height-40, 5); 
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgb(255, 255, 255)";
+      ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgb(0, 0, 0)";
+      ctx.stroke();
+      ctx.fill();
+      ctx.fillStyle = "black";
       ctx.font = "30px Segoe UI";
       ctx.textAlign = "center";
       ctx.fillText("FINISH!",255,240);
