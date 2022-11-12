@@ -52,9 +52,17 @@ function redrawCanvas(model, canvasObj, appObj) {
 
 
 function drawPuzzle(ctx, puzzle) {
-    let scalefactor = 9.8/Math.max(puzzle.rowNum, puzzle.colNum);
-    ctx.scale(scalefactor, scalefactor);
-    console.log(puzzle.rows);
+    let max = Math.max(puzzle.rowNum, puzzle.colNum);
+    const magicNumber = 9.8;
+    let scaleFactor = magicNumber/max;
+    let hSkew, vSkew; hSkew = vSkew = max/magicNumber;
+    if (puzzle.rowNum < puzzle.colNum){
+      vSkew += (puzzle.colNum - puzzle.rowNum) * scaleFactor * 25;
+    } else {
+      hSkew += (puzzle.rowNum - puzzle.colNum) * scaleFactor * 25;
+    }
+    
+    ctx.setTransform(scaleFactor, 0, 0, scaleFactor, hSkew, vSkew);
     const img = new Image();
     img.src = "./assets/NinjaSe.png"
     ctx.shadowColor = "black";
